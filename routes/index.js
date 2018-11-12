@@ -33,7 +33,7 @@ module.exports = {
             if (err) {
                 return res.status(500).send(err);
             }
-            console.log('Inserted new user');
+            res.send(result);
         });
                 
     },
