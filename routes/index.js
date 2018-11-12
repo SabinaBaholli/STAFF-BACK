@@ -1,4 +1,21 @@
 module.exports = {
+
+    getUsers: (req, result) => {
+        db.query("SELECT * FROM user", function (err, result) {
+            if (err) throw err;
+            console.log(result);
+          });
+    },
+
+    getUserById: (req, res) => {
+        let userId = req.params.id;
+        let query = "SELECT * FROM user WHERE id = ?"
+        db.query(query, userId, function (err, result) {
+            if (err) throw err;
+            console.log(result);
+          });
+    },
+
     addUser: (req, res) => {
 
         let username = req.body.username;
@@ -21,7 +38,7 @@ module.exports = {
                 
     },
 
-    editUser: (req, res) => {
+    updateUser: (req, res) => {
         let userId = req.params.id;
         let username = req.body.first_name;
         let password = req.body.last_name;
@@ -51,22 +68,6 @@ module.exports = {
         });
     },
 
-    getUsers: (req, result) => {
-        db.query("SELECT * FROM user", function (err, result) {
-            if (err) throw err;
-            console.log(result);
-          });
-    },
-
-    getUserById: (req, res) => {
-        let userId = req.params.id;
-        let query = "SELECT * FROM user WHERE id = ?"
-        db.query(query, userId, function (err, result) {
-            if (err) throw err;
-            console.log(result);
-          });
-    },
-
     getUserLeaves: (req, res) => {
         let userId = req.params.id;
         let query = "SELECT * FROM leaves WHERE userId = ?"
@@ -92,6 +93,6 @@ module.exports = {
             console.log('Inserted new leave');
         });
                 
-    },
+    }
 
 }
