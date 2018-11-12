@@ -7,7 +7,7 @@ const dbConfig = require('./db-config.json');
 
 var db = mysql.createConnection(dbConfig);
 const app = express();
-const {addUser, editUser, deleteUser, getUsers, getUserById, getUserLeaves} = require('./routes/index');
+const {addUser, editUser, deleteUser, getUsers, getUserById, getUserLeaves, addLeave} = require('./routes/index');
 const port = 5000;
 
  db.connect((err) => {
@@ -36,5 +36,6 @@ app.route('/users/:id')
 
 app.route('/leaves/:id')
   .get(getUserLeaves)
+  .post(addLeave)
 
 

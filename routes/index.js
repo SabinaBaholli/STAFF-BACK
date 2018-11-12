@@ -74,6 +74,24 @@ module.exports = {
             if (err) throw err;
             console.log(result);
           });
-    }
+    },
+
+    addLeave: (req, res) => {
+
+        let userId = req.body.userId;
+        let startDate = req.body.startDate;
+        let endDate = req.body.endDate;
+
+        // send the player's details to the database
+        let query = "INSERT INTO `leaves` (userId, startDate, endDate) VALUES ('" +
+        userId + "', '" + startDate + "', '" + endDate + "')";
+        db.query(query, (err, result) => {
+            if (err) {
+                return res.status(500).send(err);
+            }
+            console.log('Inserted new leave');
+        });
+                
+    },
 
 }
