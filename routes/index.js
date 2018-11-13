@@ -1,9 +1,15 @@
+var jwt = require('../jwt.js');
+var fs = require('fs');
+
 module.exports = {
 
-    getUsers: (req, result) => {
-        db.query("SELECT * FROM user", function (err, result) {
-            if (err) throw err;
-            console.log(result);
+    getUsers: (req, res) => {
+        let query = "SELECT * FROM user"
+        db.query(query, (err, result) => {
+            if (err) {
+                return res.status(500).send(err);
+            }
+            res.send(result);
           });
     },
 
@@ -25,6 +31,8 @@ module.exports = {
         let left_leaves = req.body.left_leaves;
         let role = req.body.role;
         let is_active = req.body.is_active;
+
+
 
         // send the player's details to the database
         let query = "INSERT INTO `user` (username, password, firstName, lastName, left_leaves, role, is_active) VALUES ('" +
@@ -73,7 +81,7 @@ module.exports = {
         let query = "SELECT * FROM leaves WHERE userId = ?"
         db.query(query, userId, function (err, result) {
             if (err) throw err;
-            console.log(result);
+            res.send(result);
           });
     },
 
@@ -93,6 +101,40 @@ module.exports = {
             console.log('Inserted new leave');
         });
                 
+    },
+
+    login: (req, res) => {
+        let username= req.body.username;
+        let password = req.body.password;
+        let query = "SELECT * FROM user WHERE username = ?";
+        db.query(query, username, (err, result) => {
+            if (err){
+                return res.status(500).send(err);
+            }
+            else if (result.length > 0) {
+                if(result[0].password == password){
+                    var payload = {
+                        username: result[0].username,
+                        password: result[0].password
+                    }
+                    $Options = {
+                        subject: JSON.stringify(result[0].id)
+                    }
+                    var token = jwt.sign(payload, $Options);
+                    res.status(200).json({
+                        idToken: token, 
+                        expiresIn: '2h',
+                        user: result[0]
+                    });
+                }
+            }
+            else{
+                res.send({
+                    "code":204,
+                    "success":"Email does not exits"
+                });
+            }
+        })
     }
 
 }
