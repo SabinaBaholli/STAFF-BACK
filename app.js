@@ -2,6 +2,16 @@
 var mysql = require('mysql');
 var express = require('express');
 var bodyParser = require('body-parser');
+var fs = require('fs')
+const expressJwt = require('express-jwt');
+
+var publicKEY  = fs.readFileSync('./public.key', 'utf8');  
+
+
+const checkIfAuthenticated = expressJwt({
+    secret: publicKEY
+}); 
+
 
 const dbConfig = require('./db-config.json');
 
@@ -25,14 +35,15 @@ global.db = db;
 app.use(bodyParser.json());
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
   next();
 });
 
 app.set('port', process.env.port || port);
 
 app.route('/users')
-  .get(getUsers)
+  .get(checkIfAuthenticated, getUsers)
   .post(addUser)
 
 app.route('/users/:id')
@@ -41,7 +52,9 @@ app.route('/users/:id')
   .put(updateUser)
 
 app.route('/leaves/:id')
-  .get(getUserLeaves)
+  .get(checkIfAuthenticated, getUserLeaves)
+  
+app.route('/leaves')
   .post(addLeave)
 
 app.post('/login',login)

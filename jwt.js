@@ -1,5 +1,7 @@
 const fs   = require('fs');
 const jwt   = require('jsonwebtoken');
+const expressJwt = require('express-jwt');
+
 
 // use 'utf8' to get string instead of byte array  (512 bit key)
 var privateKEY  = fs.readFileSync('./private.key', 'utf8');
@@ -17,11 +19,13 @@ module.exports = {
   // Token signing options
   var signOptions = {
       subject:  $Options.subject,
-      expiresIn:  "2h",    // 30 days validity
+      expiresIn:  "0.1h",    
       algorithm:  "RS256"    
   };
   return jwt.sign(payload, privateKEY, signOptions);
 },
+
+
 verify: (token, $Option) => {
   /*
    vOption = {
@@ -45,4 +49,5 @@ verify: (token, $Option) => {
     return jwt.decode(token, {complete: true});
     //returns null if token is invalid
  }
+
 }
