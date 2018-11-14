@@ -1,5 +1,6 @@
 var jwt = require('../jwt.js');
-
+var bcrypt = require('bcrypt');
+const saltRounds = 2;
 module.exports = {
 
 
@@ -25,25 +26,24 @@ module.exports = {
     },
 
     addUser: (req, res) => {
-
         let username = req.body.username;
-        let password = req.body.password;
         let firstName = req.body.firstName;
         let lastName = req.body.lastName;
         let left_leaves = req.body.left_leaves;
         let role = req.body.role;
         let is_active = req.body.is_active;
-
-        // send the player's details to the database
-        let query = "INSERT INTO `user` (username, password, firstName, lastName, left_leaves, role, is_active) VALUES ('" +
-        username + "', '" + password + "', '" + firstName + "', '" + lastName + "', '" + left_leaves + "', '" + role + "', '" + is_active + "')";
-        db.query(query, (err, result) => {
-            if (err) {
-                return res.status(500).send(err);
-            }
-            res.send(result);
-        });
-                
+      
+        bcrypt.hash(req.body.password, saltRounds, (err, hash) => {
+             let query = "INSERT INTO `user` (username, password, firstName, lastName, left_leaves, role, is_active) VALUES ('" +
+             username + "', '" + hash + "', '" + firstName + "', '" + lastName + "', '" + left_leaves + "', '" + role + "', '" + is_active + "')";
+             db.query(query, (err, result) => {
+                if (err) {
+                    return res.status(500).send(err);
+                }
+                res.send(result);
+            });
+          });
+       
     },
 
     updateUser: (req, res) => {
@@ -106,34 +106,43 @@ module.exports = {
 
     login: (req, res) => {
         let username= req.body.username;
-        let password = req.body.password;
+
         let query = "SELECT * FROM user WHERE username = ?";
         db.query(query, username, (err, result) => {
             if (err){
                 return res.status(500).send(err);
             }
             else if (result.length > 0) {
-                if(result[0].password == password){
-                    var payload = {
-                        username: result[0].username
-                    }
-                    $Options = {
-                        subject: JSON.stringify(result[0].id)
-                    }
-                    var token = jwt.sign(payload, $Options);
-                    res.status(200).json({
-                        idToken: token, 
-                        expiresIn: '2h',
-                        user: result[0]
-                    });
+                bcrypt.hash(req.body.password, saltRounds, (err, hashed) => {
+                    if (err) { throw (err); }
+                    bcrypt.compare(req.body.password, hashed, function(err, same) {
+                        console.log(hashed)
+                        if(same){
+                            console.log(same)
+                            var payload = {
+                                username: result[0].username
+                            }
+                            $Options = {
+                                subject: JSON.stringify(result[0].id)
+                            }
+                            var token = jwt.sign(payload, $Options);
+                            res.status(200).json({
+                                idToken: token, 
+                                expiresIn: '2h',
+                                user: result[0]
+                            });
+                        }
+                        else{
+                            return res.status(403).send(err);
+                        }
                 }
+                
+                );
+            })
             }
-            else{
-                res.send({
-                    "code":204,
-                    "success":"Email does not exits"
-                });
-            }
+            else {
+                return res.status(404).send(err);
+            } 
         })
     }
 
