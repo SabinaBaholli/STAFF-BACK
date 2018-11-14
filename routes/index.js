@@ -123,7 +123,7 @@ module.exports = {
                     var token = jwt.sign(payload, $Options);
                     res.status(200).json({
                         idToken: token, 
-                        expiresIn: '0.1h',
+                        expiresIn: '2h',
                         user: result[0]
                     });
                 }

@@ -19,7 +19,7 @@ module.exports = {
   // Token signing options
   var signOptions = {
       subject:  $Options.subject,
-      expiresIn:  "0.1h",    
+      expiresIn:  "2h",    
       algorithm:  "RS256"    
   };
   return jwt.sign(payload, privateKEY, signOptions);
