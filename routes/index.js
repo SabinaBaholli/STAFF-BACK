@@ -1,6 +1,6 @@
 var jwt = require('../jwt.js');
 var bcrypt = require('bcrypt');
-const saltRounds = 2;
+const saltRounds = 10;
 module.exports = {
 
 
@@ -32,7 +32,7 @@ module.exports = {
         let left_leaves = req.body.left_leaves;
         let role = req.body.role;
         let is_active = req.body.is_active;
-      
+ 
         bcrypt.hash(req.body.password, saltRounds, (err, hash) => {
              let query = "INSERT INTO `user` (username, password, firstName, lastName, left_leaves, role, is_active) VALUES ('" +
              username + "', '" + hash + "', '" + firstName + "', '" + lastName + "', '" + left_leaves + "', '" + role + "', '" + is_active + "')";
@@ -113,32 +113,28 @@ module.exports = {
                 return res.status(500).send(err);
             }
             else if (result.length > 0) {
-                bcrypt.hash(req.body.password, saltRounds, (err, hashed) => {
-                    if (err) { throw (err); }
-                    bcrypt.compare(req.body.password, hashed, function(err, same) {
-                        console.log(hashed)
-                        if(same){
-                            console.log(same)
-                            var payload = {
-                                username: result[0].username
-                            }
-                            $Options = {
-                                subject: JSON.stringify(result[0].id)
-                            }
-                            var token = jwt.sign(payload, $Options);
-                            res.status(200).json({
-                                idToken: token, 
-                                expiresIn: '2h',
-                                user: result[0]
-                            });
+                if (err) { throw (err); }
+                bcrypt.compare(req.body.password, result[0].password, (err, same) => {
+                    if(same){
+                        var payload = {
+                            username: result[0].username
                         }
-                        else{
-                            return res.status(403).send(err);
+                        $Options = {
+                            subject: JSON.stringify(result[0].id)
                         }
-                }
+                        var token = jwt.sign(payload, $Options);
+                        res.status(200).json({
+                            idToken: token, 
+                            expiresIn: '2h',
+                            user: result[0]
+                        });
+                    }
+                    else{
+                        return res.status(403).send(err);
+                    }
+            }
                 
                 );
-            })
             }
             else {
                 return res.status(404).send(err);
