@@ -17,7 +17,7 @@ const dbConfig = require('./db-config.json');
 
 var db = mysql.createConnection(dbConfig);
 const app = express();
-const {addUser, updateUser, deleteUser, getUsers, getUserById, getUserLeaves, addLeave, login} = require('./routes/index');
+const {addUser, updateUser, deleteUser, getUsers, getUserById, getUserLeaves, addLeave, deleteLeave, login} = require('./routes/index');
 const port = 5000;
 
  db.connect((err) => {
@@ -35,7 +35,7 @@ global.db = db;
 app.use(bodyParser.json());
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
+  res.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT,DELETE");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
   next();
 });
@@ -48,11 +48,12 @@ app.route('/users')
 
 app.route('/users/:id')
   .get(getUserById)
-  .delete(deleteUser)
   .put(updateUser)
+  .delete(checkIfAuthenticated, deleteUser)
 
 app.route('/leaves/:id')
   .get(checkIfAuthenticated, getUserLeaves)
+  .delete(checkIfAuthenticated, deleteLeave)
   
 app.route('/leaves')
   .post(addLeave)

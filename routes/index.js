@@ -99,9 +99,20 @@ module.exports = {
             if (err) {
                 return res.status(500).send(err);
             }
-            return res.status(200);
+            return res.status(200).send(result);
         });
                 
+    },
+
+    deleteLeave: (req, res) => {
+        leaveId = req.params.id;
+        let deleteLeaveQuery = 'DELETE FROM leaves WHERE id = "' + leaveId + '"';
+        db.query(deleteLeaveQuery, (err, result) => {
+            if (err) {
+                return res.status(500).send(err);
+            }
+            res.status(200)
+        });
     },
 
     login: (req, res) => {
