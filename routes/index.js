@@ -72,7 +72,7 @@ module.exports = {
             if (err) {
                 return res.status(500).send(err);
             }
-            res.status(200)
+            res.send({status: 200})
         });
     },
 
@@ -111,7 +111,7 @@ module.exports = {
             if (err) {
                 return res.status(500).send(err);
             }
-            res.status(200)
+            res.send({status: 200})
         });
     },
 
