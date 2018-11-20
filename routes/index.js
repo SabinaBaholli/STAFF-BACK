@@ -56,7 +56,7 @@ module.exports = {
         let role = req.body.left_leaves;
         let is_active = req.body.is_active;
 
-        let query = "UPDATE `players` SET `username` = '" + username + "', `password` = '" + password + "', `firstName` = '" + firstName + "', `lastName` = '" + lastName + "', `left_leaves` ='" + left_leaves + "',  `is_active` = '" + is_active + "',  `role` = '" + role + "'  WHERE `players`.`id` = '" + userId + "'";
+        let query = "UPDATE `user` SET `username` = '" + username + "', `password` = '" + password + "', `firstName` = '" + firstName + "', `lastName` = '" + lastName + "', `left_leaves` ='" + left_leaves + "',  `is_active` = '" + is_active + "',  `role` = '" + role + "'  WHERE `user`.`id` = '" + userId + "'";
         db.query(query, (err, result) => {
             if (err) {
                 return res.status(500).send(err);
@@ -93,8 +93,8 @@ module.exports = {
         let endDate = req.body.endDate;
 
         // send the player's details to the database
-        let query = "INSERT INTO `leaves` (type, userId, startDate, endDate) VALUES ('" +
-        type + "','" + userId + "', '" + startDate + "', '" + endDate + "')";
+        let query = "INSERT INTO `leaves` (type, userId, startDate, endDate, status) VALUES ('" +
+        type + "','" + userId + "', '" + startDate + "', '" + endDate + "', '" + 1 + "')";
         db.query(query, (err, result) => {
             if (err) {
                 return res.status(500).send(err);
@@ -113,6 +113,27 @@ module.exports = {
             }
             res.send({status: 200})
         });
+    },
+
+    updateLeave: (req, res) => {
+        let id = req.body.id;
+        let status = req.body.status;
+        let query = "UPDATE `leaves` SET `status` = '" + status + "' WHERE id = '" + id + "'";
+
+        db.query(query, (err, result) => {
+            if (err) {
+                return res.status(500).send(err);
+            }
+            res.send(result);
+        });
+    },
+
+    getLeaveRequests: (req, res) => {
+        let query = "SELECT * FROM leaves WHERE status = 1";
+        db.query(query, (err, result) => {
+            if (err) throw err;
+            res.send(result);
+          });
     },
 
     login: (req, res) => {
