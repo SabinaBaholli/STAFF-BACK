@@ -45,10 +45,10 @@ app.set('port', process.env.port || port);
 app.route('/users')
   .get(checkIfAuthenticated, getUsers)
   .post(addUser)
+  .put(updateUser)
 
 app.route('/users/:id')
   .get(getUserById)
-  .put(updateUser)
   .delete(checkIfAuthenticated, deleteUser)
 
 app.route('/leaves/:id')

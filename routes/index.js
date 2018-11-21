@@ -47,16 +47,11 @@ module.exports = {
     },
 
     updateUser: (req, res) => {
-        let userId = req.params.id;
-        let username = req.body.first_name;
-        let password = req.body.last_name;
-        let firstName = req.body.position;
-        let lastName = req.body.number;
-        let left_leaves = req.body.left_leaves;
-        let role = req.body.left_leaves;
-        let is_active = req.body.is_active;
-
-        let query = "UPDATE `user` SET `username` = '" + username + "', `password` = '" + password + "', `firstName` = '" + firstName + "', `lastName` = '" + lastName + "', `left_leaves` ='" + left_leaves + "',  `is_active` = '" + is_active + "',  `role` = '" + role + "'  WHERE `user`.`id` = '" + userId + "'";
+        let userId = req.body.id;
+        let workDays = req.body.workDays;
+       
+        let query = 
+        "UPDATE `user` SET `left_leaves` = left_leaves - '" +  workDays + "'  WHERE `user`.`id` = '" + userId + "'";
         db.query(query, (err, result) => {
             if (err) {
                 return res.status(500).send(err);
@@ -91,10 +86,12 @@ module.exports = {
         let type = req.body.type;
         let startDate = req.body.startDate;
         let endDate = req.body.endDate;
+        let workDays = req.body.workDays;
+
 
         // send the player's details to the database
-        let query = "INSERT INTO `leaves` (type, userId, startDate, endDate, status) VALUES ('" +
-        type + "','" + userId + "', '" + startDate + "', '" + endDate + "', '" + 1 + "')";
+        let query = "INSERT INTO `leaves` (type, userId, startDate, endDate, status, workDays) VALUES ('" +
+        type + "','" + userId + "', '" + startDate + "', '" + endDate + "', '" + 1 + "', '" + workDays + "')";
         db.query(query, (err, result) => {
             if (err) {
                 return res.status(500).send(err);
@@ -124,7 +121,7 @@ module.exports = {
             if (err) {
                 return res.status(500).send(err);
             }
-            res.send(result);
+            res.send({status: 200})
         });
     },
 
