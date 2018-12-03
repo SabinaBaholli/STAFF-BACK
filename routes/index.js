@@ -87,11 +87,12 @@ module.exports = {
         let startDate = req.body.startDate;
         let endDate = req.body.endDate;
         let workDays = req.body.workDays;
+        let description = req.body.description;
 
 
         // send the player's details to the database
-        let query = "INSERT INTO `leaves` (type, userId, startDate, endDate, status, workDays) VALUES ('" +
-        type + "','" + userId + "', '" + startDate + "', '" + endDate + "', '" + 1 + "', '" + workDays + "')";
+        let query = "INSERT INTO `leaves` (type, userId, startDate, endDate, status, workDays, description) VALUES ('" +
+        type + "','" + userId + "', '" + startDate + "', '" + endDate + "', '" + 1 + "', '" + workDays + "', '" + description + "')";
         db.query(query, (err, result) => {
             if (err) {
                 return res.status(500).send(err);
