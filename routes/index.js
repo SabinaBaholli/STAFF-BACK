@@ -26,7 +26,7 @@ module.exports = {
     },
 
     addUser: (req, res) => {
-        let username = req.body.username;
+        let email = req.body.email;
         let firstName = req.body.firstName;
         let lastName = req.body.lastName;
         let left_leaves = req.body.left_leaves;
@@ -34,8 +34,8 @@ module.exports = {
         let is_active = req.body.is_active;
  
         bcrypt.hash(req.body.password, saltRounds, (err, hash) => {
-             let query = "INSERT INTO `user` (username, password, firstName, lastName, left_leaves, role, is_active) VALUES ('" +
-             username + "', '" + hash + "', '" + firstName + "', '" + lastName + "', '" + left_leaves + "', '" + role + "', '" + is_active + "')";
+             let query = "INSERT INTO `user` (email, password, firstName, lastName, left_leaves, role, is_active) VALUES ('" +
+             email + "', '" + hash + "', '" + firstName + "', '" + lastName + "', '" + left_leaves + "', '" + role + "', '" + is_active + "')";
              db.query(query, (err, result) => {
                 if (err) {
                     return res.status(500).send(err);
@@ -134,10 +134,10 @@ module.exports = {
     },
 
     login: (req, res) => {
-        let username= req.body.username;
+        let email= req.body.email;
 
-        let query = "SELECT * FROM user WHERE username = ?";
-        db.query(query, username, (err, result) => {
+        let query = "SELECT * FROM user WHERE email = ?";
+        db.query(query, email, (err, result) => {
             if (err){
                 return res.status(500).send(err);
             }
@@ -146,7 +146,7 @@ module.exports = {
                 bcrypt.compare(req.body.password, result[0].password, (err, same) => {
                     if(same){
                         var payload = {
-                            username: result[0].username
+                            email: result[0].email
                         }
                         $Options = {
                             subject: JSON.stringify(result[0].id)
